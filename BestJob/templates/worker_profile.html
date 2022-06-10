@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block menu %}
+{% include "worker_menu.html" %}
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-5">
+            <div class="card shadow-lg border-0 rounded-lg mt-5 mb-5">
+                <div class="card-header"><h3 class="text-center font-weight-light my-4">Профиль соискателя</h3>
+                </div>
+                <div class="card-body">
+                    <form action="{% url 'users:worker_profile' user.pk %}" method="POST">
+                        {% csrf_token %}
+                        <div class="form-group m-3">
+                            <label class="small mb-1 " for="{{ form.name.id_for_name}}">ФИО соискателя</label>
+                            <p class="card shadow-lg border-1 rounded-lg">{{ form.name }}</p>
+                        </div>
+
+                        <div class="form-group m-3">
+                            <label class="small mb-1 " for="{{ form.image.id_for_image}}">Фото</label>
+                            <p class="card shadow-lg border-1 rounded-lg">{{ form.image }}</p>
+                        </div>
+
+                        <div class="form-group m-3">
+                            <label class="small mb-1" for="{{ form.city.id_for_city }}">Город проживания</label>
+                            <p class="card shadow-lg border-1 rounded-lg">{{ form.city }}</p>
+                        </div>
+                        <div class="form-group m-3">
+                            <label class="small mb-1" for="{{ form.phone_number.id_for_phone_number }}">Телефон для связи</label>
+                            <p class="card shadow-lg border-1 rounded-lg">{{ form.phone_number }}</p>
+                        </div>
+                        <div class="form-group m-3">
+                            <label class="small mb-1" for="{{ form.gender.id_for_gender }}">Пол</label>
+                            <p class="card shadow-lg border-1 rounded-lg">{{ form.gender }}</p>
+                        </div>
+                        <div class="form-group m-3">
+                            <label class="small mb-1" for="{{ form.birth_date.id_for_birth_date }}">Дата рождения</label>
+                            <p class="card shadow-lg border-1 rounded-lg">{{ form.birth_date }}</p>
+                        </div>
+                        <div class="form-group m-3">
+                            <label class="small mb-1" for="{{ form.data.id_for_data }}">Дата рождения</label>
+                            <p class="card shadow-lg border-1 rounded-lg">{{ form.data }}</p>
+                        </div>
+                        <div class="form-group d-flex align-items-center justify-content-center mt-4 mb-0">
+                            <input class="btn btn-primary" type="submit" value="Сохранить">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+

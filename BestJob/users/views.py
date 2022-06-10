@@ -9,7 +9,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 # Create your views here.
 from django.urls import reverse_lazy, reverse
-from django.views.generic import UpdateView, FormView, TemplateView, ListView, DetailView
+from django.views.generic import UpdateView, FormView, TemplateView, ListView, DetailView, CreateView
 
 from BestJob import settings
 from users.forms import WorkerProfileForm, EmployerProfileForm, ModeratorProfileForm, UserLoginForm, UserRegisterForm, \
@@ -21,14 +21,13 @@ from users.models import WorkerProfile, EmployerProfile, ModeratorProfile, User
 class WorkerProfileView(UpdateView):
     """view для профиля соискателя"""
     model = WorkerProfile
-    template_name = 'employee_profile.html'
+    template_name = 'worker_profile.html'
     form_class = WorkerProfileForm
+    success_url = reverse_lazy('users:worker_profile')
 
-    # success_url = reverse_lazy()
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super(WorkerProfileView, self).get_context_data(**kwargs)
-        return context
+    def get_object(self, queryset=None):
+        worker = get_object_or_404(WorkerProfile, user_id=self.kwargs['pk'])
+        return worker
 
 
 class EmployerProfileView(ListView, BaseClassContextMixin):
@@ -75,7 +74,6 @@ class ModeratorProfileView(UpdateView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(ModeratorProfileView, self).get_context_data(**kwargs)
-        return context
 
 
 class UserLoginView(LoginView):
