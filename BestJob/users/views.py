@@ -28,7 +28,7 @@ class WorkerProfileView(UpdateView):
     template_name = 'worker_profile.html'
     form_class = WorkerProfileForm
     success_url = reverse_lazy('users:worker_profile')
-    title = 'BestJob | Профайл соискателя'
+    # title = 'BestJob | Профайл соискателя'
 
     def get_object(self, queryset=None):
         user_id = self.kwargs['pk']
@@ -41,6 +41,14 @@ class WorkerProfileView(UpdateView):
             worker_profile.user = User.objects.get(pk=user_id)
             return worker_profile
 
+    def get_context_data(self, **kwargs):
+        context = super(WorkerProfileView, self).get_context_data(**kwargs)
+
+        context['title'] = "Профиль соискателя"
+        context['heading'] = "Профиль соискателя"
+        context['link'] = "/cvs/all/"
+        context['heading_link'] = "Список резюме"
+        return context
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -87,18 +95,6 @@ class EmployerDetailView(DetailView, BaseClassContextMixin):
     template_name = 'employers_detail.html'
     title = 'BestJob | Работодатель'
 
-#
-# class EmployerProfileFormView(UpdateView, BaseClassContextMixin, UserDispatchMixin):
-#     """view для профиля работодателя"""
-#     model = EmployerProfile
-#     form_class = EmployerProfileForm
-#     template_name = 'employer_profile.html'
-#     success_url = reverse_lazy('users:employer_profile')
-#     title = 'BestJob | Профайл работодателя'
-#
-#     # def get_object(self, queryset=None):
-#     #     return get_object_or_404(User, pk=self.request.employer_profile.pk)
-
 
 class EmployerProfileView(UpdateView):
     """view для профиля работодателя"""
@@ -106,7 +102,7 @@ class EmployerProfileView(UpdateView):
     template_name = 'employer_profile.html'
     form_class = EmployerProfileForm
     success_url = reverse_lazy('users:employer_profile')
-    title = 'BestJob | Профайл работодателя'
+    # title = 'BestJob | Профайл работодателя'
 
     def get_object(self, queryset=None):
         user_id = self.kwargs['pk']
@@ -118,11 +114,20 @@ class EmployerProfileView(UpdateView):
             employer_profile = EmployerProfile()
             employer_profile.user = User.objects.get(pk=user_id)
             return employer_profile
-        
+
+    def get_context_data(self, **kwargs):
+        context = super(EmployerProfileView, self).get_context_data(**kwargs)
+
+        context['title'] = "Профиль работодателя"
+        context['heading'] = "Профиль работодателя"
+        context['link'] = "/vacancy/all/"
+        context['heading_link'] = "Список вакансий"
+        return context
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        form = self.form_class(data=request.POST, files=request.FILES)
+        # form = self.form_class(data=request.POST, files=request.FILES)
+        form = self.form_class(request.POST, instance=self.object, files=request.FILES)
         user_id = self.kwargs['pk']
 
         emploerProfile = EmployerProfile.objects.filter(user_id=user_id)
@@ -132,6 +137,7 @@ class EmployerProfileView(UpdateView):
             form.instance.pk = emploerProfile.id
             form.instance.user_id = emploerProfile.user.id
             form.instance.user = emploerProfile.user
+            form.instance.data = emploerProfile.data
             form.instance.date_create = emploerProfile.date_create
 
             if form.instance.image.closed:
@@ -140,8 +146,12 @@ class EmployerProfileView(UpdateView):
             form.instance.user_id = user_id
             form.instance.user = User.objects.get(pk=user_id)
 
-        form.save()
-        return redirect(reverse("users:employer_profile", args=(user_id,)))
+        if form.is_valid():
+            form.save()
+            return redirect(reverse("users:employer_profile", args=(user_id,)))
+        else:
+            print(form.errors)
+        return self.form_invalid(form)
 
 
 class ModeratorProfileView(UpdateView):
@@ -209,7 +219,6 @@ class UserRegisterView(FormView):
     form_class = UserRegisterForm
     success_url = reverse_lazy('users:email_verify')
     unsuccess_url = reverse_lazy('users:registration')
-
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(UserRegisterView, self).get_context_data(**kwargs)
